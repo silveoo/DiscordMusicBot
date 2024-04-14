@@ -34,6 +34,9 @@ public class MusicBot {
 
         AudioProvider provider = new LavaPlayerAudioProvider(player);
 
+        TrackScheduler scheduler = new TrackScheduler(player, null);
+        player.addListener(scheduler);
+
         commands.put("join", event -> {
             final Member member = event.getMember().orElse(null);
             if (member != null) {
@@ -54,10 +57,18 @@ public class MusicBot {
             final String content = event.getMessage().getContent();
             final List<String> command = Arrays.asList(content.split(" "));
             final MessageChannel channel = event.getMessage().getChannel().block();
-            playerManager.loadItem(command.get(1), new TrackScheduler(player, channel));
+            scheduler.setChannel(channel);
+            playerManager.loadItem(command.get(1), scheduler);
             System.out.println("URL: " + command.get(1));
 
         });
+
+        commands.put("skip", event -> {
+            // Вызываем метод nextTrack из вашего TrackScheduler
+            scheduler.nextTrack();
+            event.getMessage().getChannel().block().createMessage("Текущий трек **скипнут**, переключаюсь на следующий...").block();
+        });
+
 
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()
                 .login()
