@@ -48,12 +48,31 @@ public final class TrackScheduler implements AudioLoadResultHandler, AudioEventL
         if (!queue.isEmpty()) {
             AudioTrack nextTrack = queue.poll();
             System.out.println("Следующий трек для воспроизведения: " + nextTrack.getInfo().title); // Логирование следующего трека
-            channel.createMessage("Играю следующий трек").subscribe();
+            channel.createMessage("Играю следующий трек: **" + player.getPlayingTrack().getInfo().title + "**").subscribe();
             player.startTrack(nextTrack, false);
         } else {
+            player.stopTrack();
             System.out.println("Очередь пуста"); // Логирование пустой очереди
             channel.createMessage("Треки в очереди закончились");
         }
+    }
+
+    public String getQueueInfo(){
+        StringBuilder builder = new StringBuilder();
+        AudioTrack currentTrack = player.getPlayingTrack();
+        int counter = 0;
+        if(currentTrack != null)
+            builder.append("Сейчас играет: **").append(currentTrack.getInfo().title).append("**").append("\n");
+        else builder.append("Сейчас ничего не играет");
+
+        if(!queue.isEmpty()){
+            builder.append("Следующие треки в очереди: ").append("\n");
+            for(AudioTrack track : queue) {
+                counter++;
+                builder.append(counter).append(". ").append(track.getInfo().title).append("\n");
+            }
+        }
+        return builder.toString();
     }
 
 
@@ -73,6 +92,7 @@ public final class TrackScheduler implements AudioLoadResultHandler, AudioEventL
         }
         channel.createMessage("Добавлен плейлист: **" + playlist.getName() + "**").subscribe();
     }
+
 
     @Override
     public void noMatches() {

@@ -66,8 +66,14 @@ public class MusicBot {
         commands.put("skip", event -> {
             // Вызываем метод nextTrack из вашего TrackScheduler
             scheduler.nextTrack();
-            event.getMessage().getChannel().block().createMessage("Текущий трек **скипнут**, переключаюсь на следующий...").block();
+            event.getMessage().getChannel().block().createMessage("Текущий трек **скипнут**").block();
         });
+
+        commands.put("queue", event -> {
+            String queueInfo = scheduler.getQueueInfo();
+            event.getMessage().getChannel().block().createMessage(queueInfo).block();
+        });
+
 
 
         final GatewayDiscordClient client = DiscordClientBuilder.create(args[0]).build()
@@ -94,5 +100,9 @@ public class MusicBot {
         commands.put("sunboy", event -> event.getMessage()
                 .getChannel().block()
                 .createMessage("SAMBOY").block());
+
+        commands.put("help", event -> event.getMessage()
+                .getChannel().block()
+                .createMessage("Введите !play чтобы поставить трек, !skip чтобы скипнуть текущий трек, !queue чтобы отобразить очередь.").block());
     }
 }
