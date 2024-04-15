@@ -48,8 +48,8 @@ public final class TrackScheduler implements AudioLoadResultHandler, AudioEventL
         if (!queue.isEmpty()) {
             AudioTrack nextTrack = queue.poll();
             System.out.println("Следующий трек для воспроизведения: " + nextTrack.getInfo().title); // Логирование следующего трека
-            channel.createMessage("Играю следующий трек: **" + player.getPlayingTrack().getInfo().title + "**").subscribe();
             player.startTrack(nextTrack, false);
+            channel.createMessage("Играю следующий трек: **" + player.getPlayingTrack().getInfo().title + "**").subscribe();
         } else {
             player.stopTrack();
             System.out.println("Очередь пуста"); // Логирование пустой очереди
